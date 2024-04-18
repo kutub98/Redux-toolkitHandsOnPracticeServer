@@ -39,13 +39,19 @@ app.delete('/task/:id', async (req, res) => {
 });
 
 app.get('/task', async (req, res) => {
-  try {
-    const tasklist = await collection.find({}).toArray();
-    res.json(tasklist);
-  } catch (error) {
-    console.error('Something went wrong:', error);
-    res.status(500).json({ error: error.message });
+  // try {
+  let query = {};
+  if (req.query.priority) {
+    query.priority = req.query.priority;
   }
+  // const tasklist = await collection.find({}).toArray();
+  const tasklist = collection.find(query);
+  const task = await tasklist.toArray();
+  res.send(task);
+  // } catch (error) {
+  //   console.error('Something went wrong:', error);
+  //   res.status(500).json({ error: error.message });
+  // }
 });
 app.post('/task', async (req, res) => {
   try {
