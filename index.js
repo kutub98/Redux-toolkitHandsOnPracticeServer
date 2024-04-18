@@ -33,15 +33,17 @@ const collection = database.collection('Tasklist');
 
 app.delete('/task/:id', async (req, res) => {
   const id = req.params.id;
-  console.log(id);
+  // console.log(id);
   const result = await collection.deleteOne({ _id: new ObjectId(id) });
-  console.log(result);
+  // console.log(result);
 });
 
 app.get('/task', async (req, res) => {
   // try {
   let query = {};
   if (req.query.priority) {
+    query.priority = req.query.priority;
+  } else if (req.query.priority === 'All') {
     query.priority = req.query.priority;
   }
   // const tasklist = await collection.find({}).toArray();
@@ -65,6 +67,24 @@ app.post('/task', async (req, res) => {
   }
 });
 
+app.put('/task/:id', async (req, res) => {
+  const id = req.params.id;
+  console.log(id);
+  const task = req.body;
+  const filters = { _id: new ObjectId(id) };
+  const updateDoc = {
+    $set: {
+      title: task.title,
+      description: task.description,
+      isCompleted: task.isCompleted,
+      priority: task.priority,
+    },
+  };
+  const options = { upsert: true };
+  const result = await collection.updateOne(filters, updateDoc, options);
+  console.log(result);
+  res.json(result);
+});
 app.get('/', (req, res) => {
   res.send('Hello World!');
 });
